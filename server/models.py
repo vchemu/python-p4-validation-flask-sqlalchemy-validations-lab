@@ -11,7 +11,23 @@ class Author(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
-    # Add validators 
+    # Add validators
+    @validates('name')
+    def validate_name(self, key, name):
+        names = db.session.query(Author.name).all()
+        if not name:
+            raise ValueError('Author must have a name')
+        elif name in names:
+            raise ValueError('Author must have a unique name')
+        return name
+    
+    @validates('phone_number')
+    def validate_phone_number(self, key, phone_number):
+        if len(phone_number) != 10:
+            raise ValueError('Phone number must be 10 digits')
+        return phone_number
+
+
 
     def __repr__(self):
         return f'Author(id={self.id}, name={self.name})'
@@ -27,7 +43,8 @@ class Post(db.Model):
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
-    # Add validators  
+    # Add validators
+    
 
 
     def __repr__(self):
